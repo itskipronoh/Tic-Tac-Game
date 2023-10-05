@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+    
+            background-color:chocolate;
+        }
+        
+        .game-container {
+            margin: 0 auto;
+            max-width: 300px;
+        }
+        
+        h1 {
+            font-size: 24px;
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin: 20px 0;
+        }
+        
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 24px;
+            text-align: center;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #4CAF50;
+        }
+        
+        .message {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .restart-button {
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Tic Tac Toe</h1>
+        <div id="board" class="board"></div>
+        <div id="message" class="message"></div>
+        <button id="restart-button" class="restart-button">Restart</button>
+        <div class="info">
+            <p>Active Player: <span id="activePlayer">Player 1</span></p>
+            <p>Player 1 Score: <span id="player1Score">0</span></p>
+            <p>Player 2 Score: <span id="player2Score">0</span></p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const board = document.getElementById("board");
+            const message = document.getElementById("message");
+            const restartButton = document.getElementById("restart-button");
+        
+            let player1Score = 0;
+            let player2Score = 0;
+            let currentPlayer = 'X';
+
+            let cells = ["", "", "", "", "", "", "", "", ""];
+        
+            function checkWinner() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                    [0, 4, 8], [2, 4, 6]             // Diagonals
+                ];
+        
+                for (const pattern of winPatterns) {
+                    const [a, b, c] = pattern;
+                    if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+                        return cells[a];
+                    }
+                }
+        
+                if (cells.every(cell => cell !== "")) {
+                    return "draw";
+                }
+        
+                return null;
+            }
+        
+            function handleCellClick(index) {
+                if (cells[index] === "" && !checkWinner()) {
+                    cells[index] = currentPlayer;
+                    render();
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                }
+            }
+        
+            function render() {
+                board.innerHTML = "";
+                cells.forEach((cell, index) => {
+                    const cellElement = document.createElement("div");
+                    cellElement.classList.add("cell");
+                    cellElement.textContent = cell;
+                    cellElement.addEventListener("click", () => handleCellClick(index));
+                    board.appendChild(cellElement);
+                });
+        
+                const winner = checkWinner();
+                if (winner) {
+                    if (winner === "draw") {
+                        message.textContent = "It's a draw!";
+                    } else if (winner === "X") {
+                        player1Score++; 
+                        message.textContent = "Player 1 wins!";
+                    } else if (winner === "O") {
+                        player2Score++; 
+                        message.textContent = "Player 2 wins!";
+                    }
+                } else {
+                    message.textContent = `Player ${currentPlayer === "X" ? "1" : "2"}'s turn`;
+                }
+            }
+            function updateActivePlayer(player) {
+                document.getElementById("activePlayer").textContent = player;
+            }
+    
+            // Function to update player scores
+            function updateScores(player1Score, player2Score) {
+                document.getElementById("player1Score").textContent = player1Score;
+                document.getElementById("player2Score").textContent = player2Score;
+            }
+        
+            restartButton.addEventListener("click", () => {
+                cells = ["", "", "", "", "", "", "", "", ""];
+                currentPlayer = "X";
+                render();
+            });
+        
+            render();
+        });
+        
+    </script>
+</body>
+</html>
